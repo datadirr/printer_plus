@@ -1,0 +1,143 @@
+package com.datadirr.printer_plus
+
+import androidx.annotation.NonNull
+import android.util.Log
+
+import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler
+import io.flutter.plugin.common.MethodChannel.Result
+
+import com.example.tscdll.TSCActivity
+import com.example.tscdll.TSCUSBActivity
+import com.example.tscdll.TscWifiActivity
+
+/** PrinterPlusPlugin */
+class PrinterPlusPlugin: FlutterPlugin, MethodCallHandler {
+  /// The MethodChannel that will the communication between Flutter and native Android
+  ///
+  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
+  /// when the Flutter Engine is detached from the Activity
+  private lateinit var channel : MethodChannel
+
+  override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "printer_plus")
+    channel.setMethodCallHandler(this)
+  }
+
+  override fun onMethodCall(call: MethodCall, result: Result) {
+    if (call.method == "getPlatformVersion") {
+      result.success("Android ${android.os.Build.VERSION.RELEASE}")
+    } else if (call.method == "printByTSCBLEPrinter") {
+      val arg = call.arguments as Map<*, *>
+      val macAddress = (arg["macAddress"] as String?) ?: ""
+      val type = (arg["type"] as String?) ?: ""
+      val content = (arg["content"] as String?) ?: ""
+      val codePage = (arg["codePage"] as String?) ?: "UTF-8"
+      val timeout = (arg["timeout"] as Int?) ?: 5000
+      val pageWidth = (arg["pageWidth"] as Int?) ?: 80
+      val pageHeight = (arg["pageHeight"] as Int?) ?: 40
+      val pageGap = (arg["pageGap"] as Int?) ?: 2
+      val fontWeight = (arg["fontWeight"] as String?) ?: "1"
+      val qty = (arg["qty"] as Int?) ?: 1
+      val axisX = (arg["axisX"] as Int?) ?: 0
+      val axisY = (arg["axisY"] as Int?) ?: 0
+      val height = (arg["height"] as Int?) ?: 0
+      val humanReadable = (arg["humanReadable"] as Boolean?) ?: true
+      val rotation = (arg["rotation"] as Int?) ?: "0"
+      val stretchX = (arg["stretchX"] as Int?) ?: 1
+      val stretchY = (arg["stretchY"] as Int?) ?: 1
+
+      printByTSCBLEPrinter(
+        result = result,
+        macAddress = macAddress,
+        type = type,
+        content = content,
+        codePage = codePage,
+        timeout = timeout,
+        pageWidth = pageWidth,
+        pageHeight = pageHeight,
+        pageGap = pageGap,
+        fontWeight = fontWeight,
+        qty = qty,
+        axisX = axisX,
+        axisY = axisY,
+        height = height,
+        humanReadable = humanReadable,
+        rotation = rotation,
+        stretchX = stretchX,
+        stretchY = stretchY
+      )
+    } else {
+      result.notImplemented()
+    }
+  }
+
+  override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+    channel.setMethodCallHandler(null)
+  }
+
+  private fun printByTSCBLEPrinter(
+    result: MethodChannel.Result,
+    macAddress: String,
+    type: String,
+    content: String,
+    codePage: String,
+    timeout: Int,
+    pageWidth: Int,
+    pageHeight: Int,
+    pageGap: Int,
+    fontWeight: String,
+    qty: Int,
+    axisX: Int,
+    axisY: Int,
+    height: Int,
+    humanReadable: Boolean,
+    rotation: Int,
+    stretchX: Int,
+    stretchY: Int
+  ) {
+    try {
+      if (macAddress.isNotEmpty()) {
+        val humanReadableValue = if (humanReadable) "1" else "0"
+
+        tscBTSdk.openport(macAddress) //BT
+        if (tscBTSdk.IsConnected) {
+          tscBTSdk.sendcommand("CODEPAGE $codePage\r\n")
+          tscBTSdk.sendcommand("SIZE $pageWidth mm, $pageHeight mm\r\n")
+          tscBTSdk.sendcommand("GAP $pageGap mm, 0 mm\r\n")
+          //tscBTSdk.sendcommand("BLINE 2 mm, 0 mm\r\n")
+          tscBTSdk.sendcommand("SPEED 4\r\n")
+          tscBTSdk.sendcommand("DENSITY 12\r\n")
+          tscBTSdk.sendcommand("SET TEAR ON\r\n")
+          tscBTSdk.sendcommand("SET COUNTER @1 1\r\n")
+          tscBTSdk.sendcommand("@1 = \"0001\"\r\n")
+          tscBTSdk.clearbuffer()
+
+          if (type == "text") {
+            tscBTSdk.sendcommand("TEXT $axisX,$axisY,\"$fontWeight\",$rotation,$stretchX,$stretchY,\"$content\"\r\n")
+          } else if (type == "qrcode") {
+            tscBTSdk.sendcommand("QRCODE $axisX,$axisY,Q,8,A,$rotation,M1,S7,\"$content\"\r\n")
+          } else if (type == "barcode") {
+            tscBTSdk.sendcommand("BARCODE $axisX,$axisY,\"128\",$height,$humanReadableValue,$rotation,$stretchX,$stretchY,\"$content\"\r\n")
+          }
+
+          tscBTSdk.sendcommand("PRINT $qty, 1\r\n")
+          tscBTSdk.closeport(timeout)
+          result.success(true)
+        }
+        else {
+          tscBTSdk.closeport()
+          result.success(false)
+        }
+
+      } else {
+        result.success(false)
+      }
+    } catch (e: Exception) {
+      Log.e("Exception", e.toString())
+      result.success(false)
+    }
+  }
+}
