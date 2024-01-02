@@ -3,7 +3,7 @@
 
 # printer_plus
 
-This package helps to encryption and decryption with or without secret key.
+A Flutter plugin for print text, qrcode, barcode label to printer via bluetooth.
 
 ## Using
 
