@@ -1,12 +1,16 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
 
-class TSCBLEPrinter {
+enum TYPE { text, qrcode, barcode }
+
+/// [TSCBTPrinter] this class provide print label using TSC Bluetooth Printer
+class TSCBTPrinter {
   static const _platformPrinter = MethodChannel('printer_plus');
 
+  /// print label [TEXT, QRCODE, BARCODE]
   static Future<bool> _print(
       {required String macAddress,
-      required String type,
+      required TYPE type,
       String? content,
       String? codePage,
       int? timeout,
@@ -24,9 +28,9 @@ class TSCBLEPrinter {
       int? stretchY}) async {
     if (Platform.isAndroid) {
       return await _platformPrinter
-          .invokeMethod("printByTSCBLEPrinter", <String, dynamic>{
+          .invokeMethod("printByTSCBTPrinter", <String, dynamic>{
         "macAddress": macAddress,
-        "type": type,
+        "type": type.name,
         "content": content,
         "codePage": codePage,
         "timeout": timeout,
@@ -48,6 +52,7 @@ class TSCBLEPrinter {
     }
   }
 
+  /// print label [TEXT]
   static Future<bool> printText(
       {required String macAddress,
       String? content,
@@ -65,7 +70,7 @@ class TSCBLEPrinter {
       int? stretchY}) async {
     return await _print(
         macAddress: macAddress,
-        type: "text",
+        type: TYPE.text,
         content: content,
         codePage: codePage,
         timeout: timeout,
@@ -81,6 +86,7 @@ class TSCBLEPrinter {
         stretchY: stretchY);
   }
 
+  /// print label [QRCODE]
   static Future<bool> printQR(
       {required String macAddress,
       String? content,
@@ -95,7 +101,7 @@ class TSCBLEPrinter {
       int? rotation}) async {
     return await _print(
         macAddress: macAddress,
-        type: "qrcode",
+        type: TYPE.qrcode,
         content: content,
         codePage: codePage,
         timeout: timeout,
@@ -108,6 +114,7 @@ class TSCBLEPrinter {
         rotation: rotation);
   }
 
+  /// print label [BARCODE]
   static Future<bool> printBarcode(
       {required String macAddress,
       String? content,
@@ -126,7 +133,7 @@ class TSCBLEPrinter {
       int? stretchY}) async {
     return await _print(
         macAddress: macAddress,
-        type: "barcode",
+        type: TYPE.barcode,
         content: content,
         codePage: codePage,
         timeout: timeout,

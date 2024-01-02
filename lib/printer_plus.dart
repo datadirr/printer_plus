@@ -1,4 +1,3 @@
-
 import 'printer_plus_platform_interface.dart';
 
 class PrinterPlus {
