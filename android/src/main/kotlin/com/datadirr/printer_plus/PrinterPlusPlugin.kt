@@ -128,12 +128,12 @@ class PrinterPlusPlugin : FlutterPlugin, MethodCallHandler {
                     tscBTSdk.sendcommand("CODEPAGE $codePage\r\n")
                     tscBTSdk.sendcommand("SIZE $pageWidth mm, $pageHeight mm\r\n")
                     tscBTSdk.sendcommand("GAP $pageGap mm, 0 mm\r\n")
-                    //tscBTSdk.sendcommand("BLINE 2 mm, 0 mm\r\n")
+                    /*tscBTSdk.sendcommand("BLINE 2 mm, 0 mm\r\n")*/
                     tscBTSdk.sendcommand("SPEED 4\r\n")
                     tscBTSdk.sendcommand("DENSITY 12\r\n")
                     tscBTSdk.sendcommand("SET TEAR ON\r\n")
-                    tscBTSdk.sendcommand("SET COUNTER @1 1\r\n")
-                    tscBTSdk.sendcommand("@1 = \"0001\"\r\n")
+                    /*tscBTSdk.sendcommand("SET COUNTER @1 1\r\n")
+                    tscBTSdk.sendcommand("@1 = \"0001\"\r\n")*/
                     tscBTSdk.clearbuffer()
 
                     when (type) {
@@ -154,7 +154,7 @@ class PrinterPlusPlugin : FlutterPlugin, MethodCallHandler {
                     tscBTSdk.closeport(timeout)
                     result.success(true)
                 } else {
-                    tscBTSdk.closeport()
+                    tscBTSdk.closeport(timeout)
                     Log.e("LOG", "MAC Address not connect")
                     result.success(false)
                 }
