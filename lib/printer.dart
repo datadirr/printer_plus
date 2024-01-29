@@ -40,7 +40,7 @@ class TSCBTPrinter {
         "fontWeight": fontWeight,
         "qty": qty,
         "axisX": axisX,
-        "axisY": axisX,
+        "axisY": axisY,
         "height": height,
         "humanReadable": humanReadable,
         "rotation": rotation,
