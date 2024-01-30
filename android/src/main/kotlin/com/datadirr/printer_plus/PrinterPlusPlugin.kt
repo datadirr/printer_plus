@@ -134,7 +134,7 @@ class PrinterPlusPlugin : FlutterPlugin, MethodCallHandler {
                     tscBTSdk.sendcommand("SET TEAR ON\r\n")
                     /*tscBTSdk.sendcommand("SET COUNTER @1 1\r\n")
                     tscBTSdk.sendcommand("@1 = \"0001\"\r\n")*/
-                    tscBTSdk.sendcommand("CLS\n")
+                    tscBTSdk.sendcommand("CLS\r\n")
 
                     when (type) {
                         TYPE.text.name -> {
