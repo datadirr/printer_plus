@@ -17,6 +17,7 @@ class TSCBTPrinter {
       int? pageWidth,
       int? pageHeight,
       int? pageGap,
+      int? printDirection,
       String? fontWeight,
       int? qty,
       int? axisX,
@@ -25,29 +26,36 @@ class TSCBTPrinter {
       bool? humanReadable,
       int? rotation,
       int? stretchX,
-      int? stretchY}) async {
-    if (Platform.isAndroid) {
-      return await _platformPrinter
-          .invokeMethod("printByTSCBTPrinter", <String, dynamic>{
-        "macAddress": macAddress,
-        "type": type.name,
-        "content": content,
-        "codePage": codePage,
-        "timeout": timeout,
-        "pageWidth": pageWidth,
-        "pageHeight": pageHeight,
-        "pageGap": pageGap,
-        "fontWeight": fontWeight,
-        "qty": qty,
-        "axisX": axisX,
-        "axisY": axisY,
-        "height": height,
-        "humanReadable": humanReadable,
-        "rotation": rotation,
-        "stretchX": stretchX,
-        "stretchY": stretchY
-      });
-    } else {
+      int? stretchY,
+      int? alignment}) async {
+    try {
+      if (Platform.isAndroid) {
+        return await _platformPrinter
+            .invokeMethod("printByTSCBTPrinter", <String, dynamic>{
+          "macAddress": macAddress,
+          "type": type.name,
+          "content": content,
+          "codePage": codePage,
+          "timeout": timeout,
+          "pageWidth": pageWidth,
+          "pageHeight": pageHeight,
+          "pageGap": pageGap,
+          "printDirection": printDirection,
+          "fontWeight": fontWeight,
+          "qty": qty,
+          "axisX": axisX,
+          "axisY": axisY,
+          "height": height,
+          "humanReadable": humanReadable,
+          "rotation": rotation,
+          "stretchX": stretchX,
+          "stretchY": stretchY,
+          "alignment": alignment
+        });
+      } else {
+        return false;
+      }
+    } catch (_) {
       return false;
     }
   }
@@ -61,29 +69,37 @@ class TSCBTPrinter {
       int? pageWidth,
       int? pageHeight,
       int? pageGap,
+      int? printDirection,
       String? fontWeight,
       int? qty,
       int? axisX,
       int? axisY,
       int? rotation,
       int? stretchX,
-      int? stretchY}) async {
-    return await _print(
-        macAddress: macAddress,
-        type: TYPE.text,
-        content: content,
-        codePage: codePage,
-        timeout: timeout,
-        pageWidth: pageWidth,
-        pageHeight: pageHeight,
-        pageGap: pageGap,
-        fontWeight: fontWeight,
-        qty: qty,
-        axisX: axisX,
-        axisY: axisY,
-        rotation: rotation,
-        stretchX: stretchX,
-        stretchY: stretchY);
+      int? stretchY,
+      int? alignment}) async {
+    try {
+      return await _print(
+          macAddress: macAddress,
+          type: TYPE.text,
+          content: content,
+          codePage: codePage,
+          timeout: timeout,
+          pageWidth: pageWidth,
+          pageHeight: pageHeight,
+          pageGap: pageGap,
+          printDirection: printDirection,
+          fontWeight: fontWeight,
+          qty: qty,
+          axisX: axisX,
+          axisY: axisY,
+          rotation: rotation,
+          stretchX: stretchX,
+          stretchY: stretchY,
+          alignment: alignment);
+    } catch (_) {
+      return false;
+    }
   }
 
   /// print label [QRCODE]
@@ -95,23 +111,29 @@ class TSCBTPrinter {
       int? pageWidth,
       int? pageHeight,
       int? pageGap,
+      int? printDirection,
       int? qty,
       int? axisX,
       int? axisY,
       int? rotation}) async {
-    return await _print(
-        macAddress: macAddress,
-        type: TYPE.qrcode,
-        content: content,
-        codePage: codePage,
-        timeout: timeout,
-        pageWidth: pageWidth,
-        pageHeight: pageHeight,
-        pageGap: pageGap,
-        qty: qty,
-        axisX: axisX,
-        axisY: axisY,
-        rotation: rotation);
+    try {
+      return await _print(
+          macAddress: macAddress,
+          type: TYPE.qrcode,
+          content: content,
+          codePage: codePage,
+          timeout: timeout,
+          pageWidth: pageWidth,
+          pageHeight: pageHeight,
+          pageGap: pageGap,
+          printDirection: printDirection,
+          qty: qty,
+          axisX: axisX,
+          axisY: axisY,
+          rotation: rotation);
+    } catch (_) {
+      return false;
+    }
   }
 
   /// print label [BARCODE]
@@ -123,6 +145,7 @@ class TSCBTPrinter {
       int? pageWidth,
       int? pageHeight,
       int? pageGap,
+      int? printDirection,
       int? qty,
       int? axisX,
       int? axisY,
@@ -130,23 +153,30 @@ class TSCBTPrinter {
       bool? humanReadable,
       int? rotation,
       int? stretchX,
-      int? stretchY}) async {
-    return await _print(
-        macAddress: macAddress,
-        type: TYPE.barcode,
-        content: content,
-        codePage: codePage,
-        timeout: timeout,
-        pageWidth: pageWidth,
-        pageHeight: pageHeight,
-        pageGap: pageGap,
-        qty: qty,
-        axisX: axisX,
-        axisY: axisY,
-        height: height,
-        humanReadable: humanReadable,
-        rotation: rotation,
-        stretchX: stretchX,
-        stretchY: stretchY);
+      int? stretchY,
+      int? alignment}) async {
+    try {
+      return await _print(
+          macAddress: macAddress,
+          type: TYPE.barcode,
+          content: content,
+          codePage: codePage,
+          timeout: timeout,
+          pageWidth: pageWidth,
+          pageHeight: pageHeight,
+          pageGap: pageGap,
+          printDirection: printDirection,
+          qty: qty,
+          axisX: axisX,
+          axisY: axisY,
+          height: height,
+          humanReadable: humanReadable,
+          rotation: rotation,
+          stretchX: stretchX,
+          stretchY: stretchY,
+          alignment: alignment);
+    } catch (_) {
+      return false;
+    }
   }
 }

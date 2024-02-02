@@ -34,56 +34,66 @@ class PrinterPlusPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
-        when (call.method) {
-            "getPlatformVersion" -> {
-                result.success("Android ${android.os.Build.VERSION.RELEASE}")
-            }
+        try {
+            when (call.method) {
+                "getPlatformVersion" -> {
+                    result.success("Android ${android.os.Build.VERSION.RELEASE}")
+                }
 
-            "printByTSCBTPrinter" -> {
-                val arg = call.arguments as Map<*, *>
-                val macAddress = (arg["macAddress"] as String?) ?: ""
-                val type = (arg["type"] as String?) ?: ""
-                val content = (arg["content"] as String?) ?: ""
-                val codePage = (arg["codePage"] as String?) ?: "UTF-8"
-                val timeout = (arg["timeout"] as Int?) ?: 5000
-                val pageWidth = (arg["pageWidth"] as Int?) ?: 80
-                val pageHeight = (arg["pageHeight"] as Int?) ?: 40
-                val pageGap = (arg["pageGap"] as Int?) ?: 2
-                val fontWeight = (arg["fontWeight"] as String?) ?: "1"
-                val qty = (arg["qty"] as Int?) ?: 1
-                val axisX = (arg["axisX"] as Int?) ?: 0
-                val axisY = (arg["axisY"] as Int?) ?: 0
-                val height = (arg["height"] as Int?) ?: 0
-                val humanReadable = (arg["humanReadable"] as Boolean?) ?: true
-                val rotation = (arg["rotation"] as Int?) ?: 0
-                val stretchX = (arg["stretchX"] as Int?) ?: 1
-                val stretchY = (arg["stretchY"] as Int?) ?: 1
+                "printByTSCBTPrinter" -> {
+                    val arg = call.arguments as Map<*, *>
+                    val macAddress = (arg["macAddress"] as String?) ?: ""
+                    val type = (arg["type"] as String?) ?: ""
+                    val content = (arg["content"] as String?) ?: ""
+                    val codePage = (arg["codePage"] as String?) ?: "UTF-8"
+                    val timeout = (arg["timeout"] as Int?) ?: 5000
+                    val pageWidth = (arg["pageWidth"] as Int?) ?: 80
+                    val pageHeight = (arg["pageHeight"] as Int?) ?: 40
+                    val pageGap = (arg["pageGap"] as Int?) ?: 2
+                    val printDirection = (arg["printDirection"] as Int?) ?: 0
+                    val fontWeight = (arg["fontWeight"] as String?) ?: "0"
+                    val qty = (arg["qty"] as Int?) ?: 1
+                    val axisX = (arg["axisX"] as Int?) ?: 0
+                    val axisY = (arg["axisY"] as Int?) ?: 0
+                    val height = (arg["height"] as Int?) ?: 0
+                    val humanReadable = (arg["humanReadable"] as Boolean?) ?: true
+                    val rotation = (arg["rotation"] as Int?) ?: 0
+                    val stretchX = (arg["stretchX"] as Int?) ?: 1
+                    val stretchY = (arg["stretchY"] as Int?) ?: 1
+                    val alignment = (arg["alignment"] as Int?) ?: 0
 
-                printByTSCBTPrinter(
-                    result = result,
-                    macAddress = macAddress,
-                    type = type,
-                    content = content,
-                    codePage = codePage,
-                    timeout = timeout,
-                    pageWidth = pageWidth,
-                    pageHeight = pageHeight,
-                    pageGap = pageGap,
-                    fontWeight = fontWeight,
-                    qty = qty,
-                    axisX = axisX,
-                    axisY = axisY,
-                    height = height,
-                    humanReadable = humanReadable,
-                    rotation = rotation,
-                    stretchX = stretchX,
-                    stretchY = stretchY
-                )
-            }
+                    printByTSCBTPrinter(
+                            result = result,
+                            macAddress = macAddress,
+                            type = type,
+                            content = content,
+                            codePage = codePage,
+                            timeout = timeout,
+                            pageWidth = pageWidth,
+                            pageHeight = pageHeight,
+                            pageGap = pageGap,
+                            printDirection = printDirection,
+                            fontWeight = fontWeight,
+                            qty = qty,
+                            axisX = axisX,
+                            axisY = axisY,
+                            height = height,
+                            humanReadable = humanReadable,
+                            rotation = rotation,
+                            stretchX = stretchX,
+                            stretchY = stretchY,
+                            alignment = alignment
+                    )
+                }
 
-            else -> {
-                result.notImplemented()
+                else -> {
+                    result.success("notImplemented")
+                    /*result.notImplemented()*/
+                }
             }
+        } catch (e: Exception) {
+            Log.e("EXCEPTION", e.toString())
+            result.success(false)
         }
     }
 
@@ -101,6 +111,7 @@ class PrinterPlusPlugin : FlutterPlugin, MethodCallHandler {
         pageWidth: Int,
         pageHeight: Int,
         pageGap: Int,
+        printDirection: Int,
         fontWeight: String,
         qty: Int,
         axisX: Int,
@@ -109,7 +120,8 @@ class PrinterPlusPlugin : FlutterPlugin, MethodCallHandler {
         humanReadable: Boolean,
         rotation: Int,
         stretchX: Int,
-        stretchY: Int
+        stretchY: Int,
+        alignment: Int
     ) {
         try {
             if (macAddress.isNotEmpty()) {
@@ -132,13 +144,14 @@ class PrinterPlusPlugin : FlutterPlugin, MethodCallHandler {
                     tscBTSdk.sendcommand("SPEED 4\r\n")
                     tscBTSdk.sendcommand("DENSITY 12\r\n")
                     tscBTSdk.sendcommand("SET TEAR ON\r\n")
+                    tscBTSdk.sendcommand("DIRECTION $printDirection\r\n")
                     /*tscBTSdk.sendcommand("SET COUNTER @1 1\r\n")
                     tscBTSdk.sendcommand("@1 = \"0001\"\r\n")*/
                     tscBTSdk.sendcommand("CLS\r\n")
 
                     when (type) {
                         TYPE.text.name -> {
-                            tscBTSdk.sendcommand("TEXT $axisX,$axisY,\"$fontWeight\",$rotation,$stretchX,$stretchY,\"$content\"\r\n")
+                            tscBTSdk.sendcommand("TEXT $axisX,$axisY,\"$fontWeight\",$rotation,$stretchX,$stretchY,$alignment,\"$content\"\r\n")
                         }
 
                         TYPE.qrcode.name -> {
@@ -146,7 +159,7 @@ class PrinterPlusPlugin : FlutterPlugin, MethodCallHandler {
                         }
 
                         TYPE.barcode.name -> {
-                            tscBTSdk.sendcommand("BARCODE $axisX,$axisY,\"128\",$height,$humanReadableValue,$rotation,$stretchX,$stretchY,\"$content\"\r\n")
+                            tscBTSdk.sendcommand("BARCODE $axisX,$axisY,\"128\",$height,$humanReadableValue,$rotation,$stretchX,$stretchY,$alignment,\"$content\"\r\n")
                         }
                     }
 
