@@ -1,6 +1,6 @@
 ## 1.6.0
 
-* A Flutter plugin for print text, qrcode, barcode label to printer via bluetooth.
+* Upgrade dependencies
 
 ## 1.5.0
 

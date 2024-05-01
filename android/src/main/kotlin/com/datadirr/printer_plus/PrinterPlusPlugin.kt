@@ -46,7 +46,7 @@ class PrinterPlusPlugin : FlutterPlugin, MethodCallHandler {
                     val type = (arg["type"] as String?) ?: ""
                     val content = (arg["content"] as String?) ?: ""
                     val codePage = (arg["codePage"] as String?) ?: "UTF-8"
-                    val timeout = (arg["timeout"] as Int?) ?: 5000
+                    val timeout = (arg["timeout"] as Int?) ?: 0
                     val pageWidth = (arg["pageWidth"] as Int?) ?: 80
                     val pageHeight = (arg["pageHeight"] as Int?) ?: 40
                     val pageGap = (arg["pageGap"] as Int?) ?: 2
