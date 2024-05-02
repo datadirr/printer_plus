@@ -128,7 +128,7 @@ class PrinterPlusPlugin : FlutterPlugin, MethodCallHandler {
                 val humanReadableValue = if (humanReadable) "1" else "0"
 
                 val tscBTSdk = TSCActivity() //BT
-                tscBTSdk.openport(macAddress) //BT
+                val connect = tscBTSdk.openport(macAddress) //BT
 
                 /*val tscNetSdk = TscWifiActivity() //WiFi,ETHERNET,NET
                 tscNetSdk.openport(ipAddress, 9100) //WiFi,ETHERNET,NET
@@ -136,7 +136,7 @@ class PrinterPlusPlugin : FlutterPlugin, MethodCallHandler {
                 val tscUSBSdk = TSCUSBActivity() //USB
                 tscUSBSdk.openport(usbManager, usbDevice) //USB*/
 
-                if (tscBTSdk.IsConnected) {
+                if (connect == "1") {
                     tscBTSdk.sendcommand("CODEPAGE $codePage\r\n")
                     tscBTSdk.sendcommand("SIZE $pageWidth mm, $pageHeight mm\r\n")
                     tscBTSdk.sendcommand("GAP $pageGap mm, 0 mm\r\n")
@@ -167,7 +167,6 @@ class PrinterPlusPlugin : FlutterPlugin, MethodCallHandler {
                     tscBTSdk.closeport(timeout)
                     result.success(true)
                 } else {
-                    tscBTSdk.closeport(timeout)
                     Log.e("LOG", "MAC Address not connect")
                     result.success(false)
                 }
