@@ -128,11 +128,11 @@ class PrinterPlusPlugin : FlutterPlugin, MethodCallHandler {
     ) {
         try {
             if (macAddress.isNotEmpty()) {
+                val tscBTSdk = TSCActivity() //BT
                 GlobalScope.launch(Dispatchers.IO)
                 {
                     val humanReadableValue = if (humanReadable) "1" else "0"
 
-                    val tscBTSdk = TSCActivity() //BT
                     val connect = tscBTSdk.openport(macAddress) //BT
 
                     /*val tscNetSdk = TscWifiActivity() //WiFi,ETHERNET,NET
