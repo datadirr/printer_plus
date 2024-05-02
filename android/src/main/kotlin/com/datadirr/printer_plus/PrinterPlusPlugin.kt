@@ -3,6 +3,10 @@ package com.datadirr.printer_plus
 /*import androidx.annotation.NonNull*/
 import android.util.Log
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -10,7 +14,6 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
 import com.example.tscdll.TSCActivity
-
 /*import com.example.tscdll.TSCUSBActivity
 import com.example.tscdll.TscWifiActivity*/
 
@@ -63,26 +66,26 @@ class PrinterPlusPlugin : FlutterPlugin, MethodCallHandler {
                     val alignment = (arg["alignment"] as Int?) ?: 0
 
                     printByTSCBTPrinter(
-                            result = result,
-                            macAddress = macAddress,
-                            type = type,
-                            content = content,
-                            codePage = codePage,
-                            timeout = timeout,
-                            pageWidth = pageWidth,
-                            pageHeight = pageHeight,
-                            pageGap = pageGap,
-                            printDirection = printDirection,
-                            fontWeight = fontWeight,
-                            qty = qty,
-                            axisX = axisX,
-                            axisY = axisY,
-                            height = height,
-                            humanReadable = humanReadable,
-                            rotation = rotation,
-                            stretchX = stretchX,
-                            stretchY = stretchY,
-                            alignment = alignment
+                        result = result,
+                        macAddress = macAddress,
+                        type = type,
+                        content = content,
+                        codePage = codePage,
+                        timeout = timeout,
+                        pageWidth = pageWidth,
+                        pageHeight = pageHeight,
+                        pageGap = pageGap,
+                        printDirection = printDirection,
+                        fontWeight = fontWeight,
+                        qty = qty,
+                        axisX = axisX,
+                        axisY = axisY,
+                        height = height,
+                        humanReadable = humanReadable,
+                        rotation = rotation,
+                        stretchX = stretchX,
+                        stretchY = stretchY,
+                        alignment = alignment
                     )
                 }
 
@@ -125,50 +128,53 @@ class PrinterPlusPlugin : FlutterPlugin, MethodCallHandler {
     ) {
         try {
             if (macAddress.isNotEmpty()) {
-                val humanReadableValue = if (humanReadable) "1" else "0"
+                GlobalScope.launch(Dispatchers.IO)
+                {
+                    val humanReadableValue = if (humanReadable) "1" else "0"
 
-                val tscBTSdk = TSCActivity() //BT
-                val connect = tscBTSdk.openport(macAddress) //BT
+                    val tscBTSdk = TSCActivity() //BT
+                    val connect = tscBTSdk.openport(macAddress) //BT
 
-                /*val tscNetSdk = TscWifiActivity() //WiFi,ETHERNET,NET
-                tscNetSdk.openport(ipAddress, 9100) //WiFi,ETHERNET,NET
+                    /*val tscNetSdk = TscWifiActivity() //WiFi,ETHERNET,NET
+                    tscNetSdk.openport(ipAddress, 9100) //WiFi,ETHERNET,NET
 
-                val tscUSBSdk = TSCUSBActivity() //USB
-                tscUSBSdk.openport(usbManager, usbDevice) //USB*/
+                    val tscUSBSdk = TSCUSBActivity() //USB
+                    tscUSBSdk.openport(usbManager, usbDevice) //USB*/
 
-                if (connect == "1") {
-                    tscBTSdk.sendcommand("CODEPAGE $codePage\r\n")
-                    tscBTSdk.sendcommand("SIZE $pageWidth mm, $pageHeight mm\r\n")
-                    tscBTSdk.sendcommand("GAP $pageGap mm, 0 mm\r\n")
-                    /*tscBTSdk.sendcommand("BLINE 2 mm, 0 mm\r\n")*/
-                    tscBTSdk.sendcommand("SPEED 4\r\n")
-                    tscBTSdk.sendcommand("DENSITY 12\r\n")
-                    tscBTSdk.sendcommand("SET TEAR ON\r\n")
-                    tscBTSdk.sendcommand("DIRECTION $printDirection\r\n")
-                    /*tscBTSdk.sendcommand("SET COUNTER @1 1\r\n")
-                    tscBTSdk.sendcommand("@1 = \"0001\"\r\n")*/
-                    tscBTSdk.sendcommand("CLS\r\n")
+                    if (connect == "1") {
+                        tscBTSdk.sendcommand("CODEPAGE $codePage\r\n")
+                        tscBTSdk.sendcommand("SIZE $pageWidth mm, $pageHeight mm\r\n")
+                        tscBTSdk.sendcommand("GAP $pageGap mm, 0 mm\r\n")
+                        /*tscBTSdk.sendcommand("BLINE 2 mm, 0 mm\r\n")*/
+                        tscBTSdk.sendcommand("SPEED 4\r\n")
+                        tscBTSdk.sendcommand("DENSITY 12\r\n")
+                        tscBTSdk.sendcommand("SET TEAR ON\r\n")
+                        tscBTSdk.sendcommand("DIRECTION $printDirection\r\n")
+                        /*tscBTSdk.sendcommand("SET COUNTER @1 1\r\n")
+                        tscBTSdk.sendcommand("@1 = \"0001\"\r\n")*/
+                        tscBTSdk.sendcommand("CLS\r\n")
 
-                    when (type) {
-                        TYPE.text.name -> {
-                            tscBTSdk.sendcommand("TEXT $axisX,$axisY,\"$fontWeight\",$rotation,$stretchX,$stretchY,$alignment,\"$content\"\r\n")
+                        when (type) {
+                            TYPE.text.name -> {
+                                tscBTSdk.sendcommand("TEXT $axisX,$axisY,\"$fontWeight\",$rotation,$stretchX,$stretchY,$alignment,\"$content\"\r\n")
+                            }
+
+                            TYPE.qrcode.name -> {
+                                tscBTSdk.sendcommand("QRCODE $axisX,$axisY,Q,8,A,$rotation,M1,S7,\"$content\"\r\n")
+                            }
+
+                            TYPE.barcode.name -> {
+                                tscBTSdk.sendcommand("BARCODE $axisX,$axisY,\"128\",$height,$humanReadableValue,$rotation,$stretchX,$stretchY,$alignment,\"$content\"\r\n")
+                            }
                         }
 
-                        TYPE.qrcode.name -> {
-                            tscBTSdk.sendcommand("QRCODE $axisX,$axisY,Q,8,A,$rotation,M1,S7,\"$content\"\r\n")
-                        }
-
-                        TYPE.barcode.name -> {
-                            tscBTSdk.sendcommand("BARCODE $axisX,$axisY,\"128\",$height,$humanReadableValue,$rotation,$stretchX,$stretchY,$alignment,\"$content\"\r\n")
-                        }
+                        tscBTSdk.sendcommand("PRINT $qty, 1\r\n")
+                        tscBTSdk.closeport(timeout)
+                        result.success(true)
+                    } else {
+                        Log.e("LOG", "MAC Address not connect")
+                        result.success(false)
                     }
-
-                    tscBTSdk.sendcommand("PRINT $qty, 1\r\n")
-                    tscBTSdk.closeport(timeout)
-                    result.success(true)
-                } else {
-                    Log.e("LOG", "MAC Address not connect")
-                    result.success(false)
                 }
             } else {
                 Log.e("LOG", "MAC Address not found")
