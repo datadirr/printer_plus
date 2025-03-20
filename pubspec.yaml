@@ -2,7 +2,7 @@ name: printer_plus
 description: "A Flutter plugin for print text, qrcode, barcode label to printer via bluetooth."
 repository: https://github.com/datadirr/printer_plus
 homepage: https://datadirr.com
-version: 2.0.0
+version: 2.1.0
 
 environment:
   sdk: ^3.7.2
