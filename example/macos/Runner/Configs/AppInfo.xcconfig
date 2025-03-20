@@ -11,4 +11,4 @@ PRODUCT_NAME = printer_plus_example
 PRODUCT_BUNDLE_IDENTIFIER = com.datadirr.printerPlusExample
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2024 com.datadirr. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2025 com.datadirr. All rights reserved.

@@ -53,8 +53,6 @@ In the **android/app/src/main/AndroidManifest.xml** let’s add:
 	 <uses-permission android:name="android.permission.BLUETOOTH" />  
 	 <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />  
 	 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 ```
 #### **IOS**
 In the **ios/Runner/Info.plist** let’s add:

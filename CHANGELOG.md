@@ -1,3 +1,7 @@
+## 2.0.0
+
+* Upgrade dependencies.
+
 ## 1.11.0
 
 * upgrade dependencies.
