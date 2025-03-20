@@ -17,15 +17,14 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
+        appBar: AppBar(title: const Text('Plugin example app')),
         body: Center(
           child: ElevatedButton(
-              onPressed: () {
-                _print();
-              },
-              child: const Text("Print")),
+            onPressed: () {
+              _print();
+            },
+            child: const Text("Print"),
+          ),
         ),
       ),
     );
@@ -33,9 +32,13 @@ class _MyAppState extends State<MyApp> {
 
   _print() async {
     await TSCBTPrinter.printText(
-        macAddress: "MAC Address", content: "datadirr");
+      macAddress: "MAC Address",
+      content: "datadirr",
+    );
     await TSCBTPrinter.printQR(macAddress: "MAC Address", content: "datadirr");
     await TSCBTPrinter.printBarcode(
-        macAddress: "MAC Address", content: "datadirr");
+      macAddress: "MAC Address",
+      content: "datadirr",
+    );
   }
 }
