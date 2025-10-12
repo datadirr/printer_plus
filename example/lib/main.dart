@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  _print() async {
+  Future<void> _print() async {
     await TSCBTPrinter.printText(
       macAddress: "MAC Address",
       content: "datadirr",
